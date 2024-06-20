@@ -79,16 +79,17 @@
                                     <div class="col-md-6 col-12 mb-3">
                                         <input type="number" name="phone[]" class="form-control" placeholder="เบอร์โทรศัพท์">
                                     </div>
-                                    <div class="col-md-4 col-12 mb-3">
+                                    <div class="col-md-6 col-12 mb-3">
                                         <input type="text" name="address[]" class="form-control" placeholder="ที่อยู่ปัจจุบัน">
+                                    </div>
+                                    <div class="col-md-10 col-12 mb-3">
+                                        <input type="number" name="amount[]" required class="form-control" placeholder="จำนวนเงิน">
                                     </div>
                                     <div class="col-md-2 col-12 mb-3">
                                         <button id="addNameButton" type="button" class="btn btn-primary">เพิ่มชื่อ +</button>
                                     </div>
                                 </div>
-                                <div class="col-md-12 col-12 mb-3">
-                                    <input type="number" name="amount" required class="form-control" placeholder="จำนวนเงิน">
-                                </div>
+
                             </div>
                             <div id="donationOptions" class="row" style="display: none;">
                                 <div class="col-md-10 col-12 mb-3">
@@ -113,6 +114,9 @@
                                     <input type="file" name="img_file" required class="form-control" accept="image/jpeg, image/png, image/jpg" id="imgFileInput">
                                     <small class="form-text text-danger">*อัพโหลดได้เฉพาะ .jpeg, .jpg, .png</small>
                                 </div>
+                            </div>
+                            <div class="col-md-12 col-12 mb-3">
+                                <input type="text" name="note" class="form-control" placeholder="หมายเหตุ">
                             </div>
                             <div class="row">
                                 <div class="col-md-6 col-12 mb-3">
@@ -142,13 +146,14 @@
                     $newname = $numrand . $date1 . $typefile;
                     $path_copy = $path . $newname;
                     move_uploaded_file($_FILES['img_file']['tmp_name'], $path_copy);
-                    if (isset($_POST['fullname']) && isset($_POST['idname']) && !empty($_POST['fullname']) && !empty($_POST['idname']) && !empty($_POST['edo']) && !empty($_POST['optionsedo'])) {
+                    if (isset($_POST['fullname']) && isset($_POST['idname']) && !empty($_POST['fullname']) && !empty($_POST['amount']) && !empty($_POST['note']) && !empty($_POST['edo']) && !empty($_POST['optionsedo'])) {
                         $fullnames = $_POST['fullname'];
                         $idnames = $_POST['idname'];
                         $phones = $_POST['phone'];
                         $addresses = $_POST['address'];
                         $edo = $_POST['edo'];
-                        $amount = $_POST['amount'];
+                        $amounts = $_POST['amount'];
+                        $note = $_POST['note'];
                         $optionsedo = $_POST['optionsedo'];
                         $success = true;
                         for ($i = 0; $i < count($fullnames); $i++) {
@@ -157,7 +162,8 @@
                             $idname = $idnames[$i];
                             $phone = $phones[$i];
                             $address = $addresses[$i];
-                            $stmt = $conn->prepare("INSERT INTO edonat (img_name, fullname, idname, phone, address, edo, optionsedo, img_file, amount) VALUES (:img_name, :fullname, :idname, :phone, :address, :edo, :optionsedo, :img_file, :amount)");
+                            $amount = $amounts[$i];
+                            $stmt = $conn->prepare("INSERT INTO edonat (img_name, fullname, idname, phone, address, edo, optionsedo, img_file, amount, note) VALUES (:img_name, :fullname, :idname, :phone, :address, :edo, :optionsedo, :img_file, :amount, :note)");
                             $stmt->bindParam(':img_name', $img_name, PDO::PARAM_STR);
                             $stmt->bindParam(':fullname', $fullname, PDO::PARAM_STR);
                             $stmt->bindParam(':idname', $idname, PDO::PARAM_STR);
@@ -167,6 +173,7 @@
                             $stmt->bindParam(':optionsedo', $optionsedo, PDO::PARAM_STR);
                             $stmt->bindParam(':img_file', $newname, PDO::PARAM_STR);
                             $stmt->bindParam(':amount', $amount, PDO::PARAM_STR);
+                            $stmt->bindParam(':note', $note, PDO::PARAM_STR);
                             $result = $stmt->execute();
 
                             if (!$result) {
@@ -320,13 +327,23 @@
 
                 // Create div for address input
                 const newaddressDiv = document.createElement('div');
-                newaddressDiv.classList.add('col-md-4', 'col-12', 'mb-3');
+                newaddressDiv.classList.add('col-md-6', 'col-12', 'mb-3');
                 const newaddressInput = document.createElement('input');
                 newaddressInput.type = 'text';
                 newaddressInput.name = `address[]`; // Array name
                 newaddressInput.classList.add('form-control');
                 newaddressInput.placeholder = 'ที่อยู่ปัจจุบัน';
                 newaddressDiv.appendChild(newaddressInput);
+
+                // Create div for amount input
+                const newamountDiv = document.createElement('div');
+                newamountDiv.classList.add('col-md-10', 'col-12', 'mb-3');
+                const newamountInput = document.createElement('input');
+                newamountInput.type = 'number';
+                newamountInput.name = `amount[]`;
+                newamountInput.classList.add('form-control');
+                newamountInput.placeholder = 'จำนวนเงิน';
+                newamountDiv.appendChild(newamountInput);
 
                 // Create div for remove button
                 const buttonDiv = document.createElement('div');
@@ -348,6 +365,7 @@
                 setContainer.appendChild(newIDDiv);
                 setContainer.appendChild(newphoneDiv);
                 setContainer.appendChild(newaddressDiv);
+                setContainer.appendChild(newamountDiv);
                 setContainer.appendChild(buttonDiv);
 
                 // Append the set container to the main container
