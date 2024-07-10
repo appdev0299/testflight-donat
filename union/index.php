@@ -4,43 +4,33 @@
 
 <body id="section_1">
 
-    <?php require_once('header.php');
+    <?php
     require_once('nav.php'); ?>
     <main>
-        <section class="testimonial-section section-padding section-bg">
-            <div class="container">
-                <div class="row">
-                    <div class="col-12 mx-auto">
-                        <div id="testimonial-carousel" class="carousel carousel-fade slide" data-bs-ride="carousel">
-                            <div class="carousel-inner">
-                                <div class="carousel-item active">
-                                    <div class="single-logo mt-3 wow fadeIn" data-wow-duration="1s" data-wow-delay="0.2s">
-                                        <img src="../images/causes/logo-all.png" alt="brand" class="img-fluid" />
-                                    </div>
-                                </div>
-                            </div>
+        <?php require_once('header.php'); ?>
+        <div class="row">
+            <div class="col-12 mx-auto">
+                <div id="testimonial-carousel" class="carousel carousel-fade slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img src="../images/cover2.jpg" width="100%" alt="brand" />
                         </div>
                     </div>
                 </div>
             </div>
-        </section>
-
-
+        </div>
         <section class="section-padding" id="section_2">
             <div class="container">
                 <div class="row">
-                    <div class="col-lg-12 col-12 text-center mb-4">
-                        <h3>โครงการบริจาคของ สมาคมศิษย์เก่าพยาบาลศาสตร์</h3>
-                    </div>
                     <?php
-                    require_once 'connection.php';
+                    require_once '../connection.php';
                     $stmt = $conn->prepare("SELECT * FROM `union` ORDER BY id ASC");
                     $stmt->execute();
                     $result = $stmt->fetchAll();
                     foreach ($result as $t1) {
                         $imageURL = "images/causes" . $t1['img_file'];
                     ?>
-                        <div class="col-lg-4 col-md-6 col-12 mb-4 mb-lg-5">
+                        <div class="col-lg-6 col-md-6 col-12 mb-4 mb-lg-5">
                             <div class="custom-block-wrap">
                                 <img src="../images/causes/<?= $t1['img_file']; ?>" class="custom-block-image img-fluid" alt="">
                                 <div class="custom-block">
@@ -56,11 +46,11 @@
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalLabel">กรอกรายละเอียด บริจาคของ สมาคมศิษย์เก่าพยาบาลศาสตร์</h1>
+                        <h5 class="modal-title fs-5" id="exampleModalLabel">กรอกรายละเอียด บริจาคของ สมาคมศิษย์เก่าพยาบาลศาสตร์</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form id="dynamicForm" action="" method="post" enctype="multipart/form-data">
+                        <form class="custom-form" id="dynamicForm" action="" method="post" enctype="multipart/form-data">
                             <input type="hidden" name="edo" id="edoValue">
                             <div class="col-md-12 col-12 mb-3">
                                 <input type="hidden" name="img_name" required class="form-control">
@@ -83,7 +73,7 @@
                                         <input type="number" name="amount[]" required class="form-control" placeholder="จำนวนเงิน">
                                     </div>
                                     <div class="col-md-2 col-12 mb-3">
-                                        <button id="addNameButton" type="button" class="btn btn-primary">เพิ่มชื่อ +</button>
+                                        <button id="addNameButton" type="submit-primary" class="btn btn-primary">เพิ่มชื่อ +</button>
                                     </div>
                                 </div>
 
@@ -121,8 +111,8 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
-                                <button type="submit" class="btn btn-success">บันทึกข้อมูล</button>
+                                <button type="submit-secondary" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                                <button type="submit-success" class="btn btn-success ">บันทึกข้อมูล</button>
                             </div>
                         </form>
                     </div>
@@ -131,107 +121,86 @@
         </div>
         <?php
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            require_once 'connection.php';
-            $date1 = date("Ymd_His");
-            $numrand = mt_rand();
-            $img_file = isset($_POST['img_file']) ? $_POST['img_file'] : '';
-            $upload = $_FILES['img_file']['name'];
-            if ($upload != '') {
-                $typefile = strrchr($_FILES['img_file']['name'], ".");
-                if ($typefile == '.jpg' || $typefile == '.jpeg' || $typefile == '.png') {
-                    $path = "../upload/";
-                    $newname = $numrand . $date1 . $typefile;
-                    $path_copy = $path . $newname;
-                    move_uploaded_file($_FILES['img_file']['tmp_name'], $path_copy);
+            require_once '../connection.php';
+            try {
+                $date1 = date("Ymd_His");
+                $numrand = mt_rand();
+                $img_file = isset($_POST['img_file']) ? $_POST['img_file'] : '';
+                $upload = $_FILES['img_file']['name'];
+                if ($upload != '') {
+                    $typefile = strrchr($_FILES['img_file']['name'], ".");
+                    if ($typefile == '.jpg' || $typefile == '.jpeg' || $typefile == '.png') {
+                        $path = "../upload/";
+                        $newname = $numrand . $date1 . $typefile;
+                        $path_copy = $path . $newname;
+                        move_uploaded_file($_FILES['img_file']['tmp_name'], $path_copy);
 
-                    if (isset($_POST['fullname']) && isset($_POST['idname']) && !empty($_POST['fullname']) && !empty($_POST['amount']) && !empty($_POST['note']) && !empty($_POST['edo']) && !empty($_POST['optionsedo'])) {
-                        $fullnames = $_POST['fullname'];
-                        $idnames = $_POST['idname'];
-                        $phones = $_POST['phone'];
-                        $addresses = $_POST['address'];
-                        $edo = $_POST['edo'];
-                        $amounts = $_POST['amount']; // Changed variable name to avoid conflict
-                        $optionsedo = $_POST['optionsedo'];
-                        $note = $_POST['note'];
-                        $success = true;
+                        if (isset($_POST['fullname']) && isset($_POST['idname']) && !empty($_POST['fullname'])) {
+                            $fullnames = $_POST['fullname'];
+                            $idnames = $_POST['idname'];
+                            $phones = isset($_POST['phone']) ? $_POST['phone'] : [];
+                            $addresses = isset($_POST['address']) ? $_POST['address'] : [];
+                            $edos = isset($_POST['edo']) ? $_POST['edo'] : '';
+                            $amounts = isset($_POST['amount']) ? $_POST['amount'] : [];
+                            $note = isset($_POST['note']) ? $_POST['note'] : '';
+                            $optionsedo = isset($_POST['optionsedo']) ? $_POST['optionsedo'] : '';
+                            $success = true;
 
-                        for ($i = 0; $i < count($fullnames); $i++) {
-                            $img_name = $_POST['img_name'];
-                            $fullname = $fullnames[$i];
-                            $idname = $idnames[$i];
-                            $phone = $phones[$i];
-                            $address = $addresses[$i];
-                            $amount = $amounts[$i]; // Changed variable name to avoid conflict
-                            $stmt = $conn->prepare("INSERT INTO edonat (img_name, fullname, idname, phone, address, edo, optionsedo, img_file, amount, note) VALUES (:img_name, :fullname, :idname, :phone, :address, :edo, :optionsedo, :img_file, :amount, :note)");
-                            $stmt->bindParam(':img_name', $img_name, PDO::PARAM_STR);
-                            $stmt->bindParam(':fullname', $fullname, PDO::PARAM_STR);
-                            $stmt->bindParam(':idname', $idname, PDO::PARAM_STR);
-                            $stmt->bindParam(':phone', $phone, PDO::PARAM_STR);
-                            $stmt->bindParam(':address', $address, PDO::PARAM_STR);
-                            $stmt->bindParam(':edo', $edo, PDO::PARAM_STR);
-                            $stmt->bindParam(':optionsedo', $optionsedo, PDO::PARAM_STR);
-                            $stmt->bindParam(':img_file', $newname, PDO::PARAM_STR);
-                            $stmt->bindParam(':amount', $amount, PDO::PARAM_STR);
-                            $stmt->bindParam(':note', $note, PDO::PARAM_STR);
-                            $result = $stmt->execute();
+                            for ($i = 0; $i < count($fullnames); $i++) {
+                                $img_name = isset($_POST['img_name']) ? $_POST['img_name'] : '';
+                                $fullname = $fullnames[$i];
+                                $idname = $idnames[$i];
+                                $phone = isset($phones[$i]) ? $phones[$i] : '';
+                                $address = isset($addresses[$i]) ? $addresses[$i] : '';
+                                $amount = isset($amounts[$i]) ? $amounts[$i] : '';
 
-                            if (!$result) {
-                                $success = false;
-                                break;
+                                $stmt = $conn->prepare("INSERT INTO edonat (img_name, fullname, idname, phone, address, edo, optionsedo, img_file, amount, note) VALUES (:img_name, :fullname, :idname, :phone, :address, :edo, :optionsedo, :img_file, :amount, :note)");
+                                $stmt->bindParam(':img_name', $img_name, PDO::PARAM_STR);
+                                $stmt->bindParam(':fullname', $fullname, PDO::PARAM_STR);
+                                $stmt->bindParam(':idname', $idname, PDO::PARAM_STR);
+                                $stmt->bindParam(':phone', $phone, PDO::PARAM_STR);
+                                $stmt->bindParam(':address', $address, PDO::PARAM_STR);
+                                $stmt->bindParam(':edo', $edos, PDO::PARAM_STR);
+                                $stmt->bindParam(':optionsedo', $optionsedo, PDO::PARAM_STR);
+                                $stmt->bindParam(':img_file', $newname, PDO::PARAM_STR);
+                                $stmt->bindParam(':amount', $amount, PDO::PARAM_STR);
+                                $stmt->bindParam(':note', $note, PDO::PARAM_STR);
+                                $result = $stmt->execute();
+
+                                if (!$result) {
+                                    $success = false;
+                                    break;
+                                }
                             }
-                        }
 
-                        if ($success) {
-                            echo '
-                    <script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
-                    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert-dev.js"></script>
-                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.css">
-                    <script>
-                    swal({
-                        title: "บันทึกข้อมูลบริจาคสำเร็จ",
-                        text: "กรุณารอสักครู่",
-                        type: "success",
-                        timer: 2000,
-                        showConfirmButton: false
-                    }, function(){
-                        window.location.href = "index.php";
-                    });
-                    </script>';
+                            if ($success) {
+                                echo '
+                        <script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+                        <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert-dev.js"></script>
+                        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.css">
+                        <script>
+                        swal({
+                            title: "บันทึกข้อมูลบริจาคสำเร็จ",
+                            text: "กรุณารอสักครู่",
+                            type: "success",
+                            timer: 2500,
+                            showConfirmButton: false
+                        }, function(){
+                            window.location.href = "index.php";
+                        });
+                        </script>';
+                            } else {
+                                throw new Exception("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+                            }
                         } else {
-                            echo '
-                    <script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
-                    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert-dev.js"></script>
-                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.css">
-                    <script>
-                    swal({
-                        title: "เกิดข้อผิดพลาด",
-                        text: "เกิดข้อผิดพลาดในการอัพโหลด",
-                        type: "error",
-                        timer: 2000,
-                        showConfirmButton: false
-                    }, function(){
-                        window.location.href = "index.php";
-                    });
-                    </script>';
+                            throw new Exception("โปรดกรอกข้อมูลชื่อเต็มและ ID");
                         }
+                    } else {
+                        throw new Exception("โปรดอัพโหลดไฟล์รูปภาพเฉพาะ .jpg, .jpeg, หรือ .png เท่านั้น");
                     }
-                } else {
-                    echo '
-            <script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert-dev.js"></script>
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.css">
-            <script>
-            swal({
-                title: "คุณอัพโหลดไฟล์ไม่ถูกต้อง",
-                text: "โปรดอัพโหลดไฟล์รูปภาพเฉพาะ .jpg, .jpeg, หรือ .png เท่านั้น",
-                type: "error",
-                timer: 2000,
-                showConfirmButton: false
-            }, function(){
-                window.location.href = "index.php";
-            });
-            </script>';
                 }
+            } catch (Exception $e) {
+                echo '<div class="alert alert-danger" role="alert">' . $e->getMessage() . '</div>';
             }
             $conn = null;
         }
@@ -239,7 +208,8 @@
 
     </main>
     <?php require_once('footer.php'); ?>
-    <script src="js/main.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.min.js"></script>
+    <script src="../js/main.js"></script>
     <style>
         .labeled-hr-container {
             display: flex;

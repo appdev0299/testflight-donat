@@ -1,12 +1,12 @@
 <header class="site-header">
     <div class="container">
         <div class="row">
-            <div class="col-lg-8 col-12 ms-auto  flex-wrap">
-                <ul class="social-icon">
+            <div class="col-lg-12 col-12 ms-auto flex-wrap text-center">
+                
                     <li class="social-icon-item">
-                        <h7>สร้างพลังพยาบาล สร้างอุดมการณ์วิชาชีพ | Empowering Future Nurses with Pride and Professionalism</h7>
+                        <h6 style="display: inline-block;"></h6>
                     </li>
-                </ul>
+               
             </div>
         </div>
     </div>
